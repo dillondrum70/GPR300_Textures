@@ -23,6 +23,8 @@
 #include "EW/ShapeGen.h"
 
 #include "Material.h"
+#include "Texture.h"
+
 #include "PointLight.h"
 #include "DirectionalLight.h"
 #include "SpotLight.h"
@@ -89,6 +91,10 @@ bool phong = true;
 
 bool wireFrame = false;
 
+const std::string ASSET_PATH = "./Textures/";
+const std::string TEX_FILENAME_DIAMOND_PLATE = "DiamondPlate006C_4K_Color.jpg";
+const std::string TEX_FILENAME_PAVING_STONES = "PavingStones130_4K_Color.jpg";
+
 int main() {
 	if (!glfwInit()) {
 		printf("glfw failed to init");
@@ -127,19 +133,19 @@ int main() {
 	//Used to draw light sphere
 	Shader unlitShader("shaders/defaultLit.vert", "shaders/unlit.frag");
 
-	ew::MeshData cubeMeshData;
+	/*ew::MeshData cubeMeshData;
 	ew::createCube(1.0f, 1.0f, 1.0f, cubeMeshData);
 	ew::MeshData sphereMeshData;
 	ew::createSphere(0.5f, 64, sphereMeshData);
 	ew::MeshData cylinderMeshData;
-	ew::createCylinder(1.0f, 0.5f, 64, cylinderMeshData);
+	ew::createCylinder(1.0f, 0.5f, 64, cylinderMeshData);*/
 	ew::MeshData planeMeshData;
 	ew::createPlane(1.0f, 1.0f, planeMeshData);
 
-	ew::Mesh cubeMesh(&cubeMeshData);
-	ew::Mesh sphereMesh(&sphereMeshData);
+	//ew::Mesh cubeMesh(&cubeMeshData);
+	//ew::Mesh sphereMesh(&sphereMeshData);
 	ew::Mesh planeMesh(&planeMeshData);
-	ew::Mesh cylinderMesh(&cylinderMeshData);
+	//ew::Mesh cylinderMesh(&cylinderMeshData);
 
 	//Enable back face culling
 	glEnable(GL_CULL_FACE);
@@ -152,6 +158,18 @@ int main() {
 	//Enable depth testing
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
+
+	Texture diamondTex = Texture();
+	diamondTex.CreateTexture((ASSET_PATH + TEX_FILENAME_DIAMOND_PLATE).c_str());
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, diamondTex.GetTexture());
+
+	Texture paversTex = Texture();
+	paversTex.CreateTexture((ASSET_PATH + TEX_FILENAME_PAVING_STONES).c_str());
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, paversTex.GetTexture());
 
 	//Initialize shape transforms
 	ew::Transform cubeTransform;
@@ -194,7 +212,12 @@ int main() {
 	directionalLights[5].color = glm::vec3(1, .5, 0);
 	directionalLights[6].color = glm::vec3(1, 1, 0);
 	directionalLights[7].color = glm::vec3(0, 1, 0);
-	
+
+	//Set texture sampler to texture unit 0
+	litShader.setInt("_TextureDiamondPlate", 0);
+
+	//Set texture sampler to texture unit 1
+	litShader.setInt("_TexturePavingStones", 1);
 
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
@@ -298,23 +321,23 @@ int main() {
 
 		litShader.setInt("_Phong", phong);
 
-		//Draw cube
-		glm::mat4 cubeModel = cubeTransform.getModelMatrix();
-		litShader.setMat4("_Model", cubeModel);
-		litShader.setMat4("_NormalMatrix", glm::transpose(glm::inverse(cubeModel)));
-		cubeMesh.draw();
+		////Draw cube
+		//glm::mat4 cubeModel = cubeTransform.getModelMatrix();
+		//litShader.setMat4("_Model", cubeModel);
+		//litShader.setMat4("_NormalMatrix", glm::transpose(glm::inverse(cubeModel)));
+		//cubeMesh.draw();
 
-		//Draw sphere
-		glm::mat4 sphereModel = sphereTransform.getModelMatrix();
-		litShader.setMat4("_Model", sphereModel);
-		litShader.setMat4("_NormalMatrix", glm::transpose(glm::inverse(sphereModel)));
-		sphereMesh.draw();
+		////Draw sphere
+		//glm::mat4 sphereModel = sphereTransform.getModelMatrix();
+		//litShader.setMat4("_Model", sphereModel);
+		//litShader.setMat4("_NormalMatrix", glm::transpose(glm::inverse(sphereModel)));
+		//sphereMesh.draw();
 
-		//Draw cylinder
-		glm::mat4 cylinderModel = cylinderTransform.getModelMatrix();
-		litShader.setMat4("_Model", cylinderModel);
-		litShader.setMat4("_NormalMatrix", glm::transpose(glm::inverse(cylinderModel)));
-		cylinderMesh.draw();
+		////Draw cylinder
+		//glm::mat4 cylinderModel = cylinderTransform.getModelMatrix();
+		//litShader.setMat4("_Model", cylinderModel);
+		//litShader.setMat4("_NormalMatrix", glm::transpose(glm::inverse(cylinderModel)));
+		//cylinderMesh.draw();
 
 		//Draw plane
 		glm::mat4 planeModel = planeTransform.getModelMatrix();
@@ -330,7 +353,7 @@ int main() {
 		{
 			unlitShader.setMat4("_Model", glm::translate(glm::mat4(1), pointLights[i].pos) * glm::scale(glm::mat4(1), glm::vec3(lightScale)));
 			unlitShader.setVec3("_Color", pointLights[i].color);
-			sphereMesh.draw();
+			//sphereMesh.draw();
 		}
 
 		for (size_t i = 0; i < spotlightCount; i++)
@@ -339,7 +362,7 @@ int main() {
 
 			unlitShader.setMat4("_Model", glm::translate(glm::mat4(1), spotlights[i].pos)* rotation * glm::scale(glm::mat4(1), glm::vec3(lightScale)));
 			unlitShader.setVec3("_Color", spotlights[i].color);
-			cylinderMesh.draw();
+			//cylinderMesh.draw();
 		}
 
 		//Material

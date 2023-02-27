@@ -6,6 +6,7 @@ in struct Vertex
     vec3 Normal;
     vec3 WorldPos;
     vec3 WorldNormal;
+    vec2 UV;
 }vert_out;
 
 //Uniforms from application
@@ -71,6 +72,11 @@ struct Material
 uniform Material _Mat;
 uniform vec3 _CamPos;
 uniform bool _Phong;
+
+uniform sampler2D _TextureDiamondPlate;
+uniform sampler2D _TexturePavingStones;
+
+//Functions
 
 vec3 calculateDiffuse(float coefficient, vec3 lightDir, vec3 worldNormal, vec3 intensity)
 {
@@ -211,4 +217,5 @@ void main()
 
 
     FragColor = vec4(ambient + diffuse + specular, 1.0f);
+    FragColor = texture(_TextureDiamondPlate, vert_out.UV);
 }
