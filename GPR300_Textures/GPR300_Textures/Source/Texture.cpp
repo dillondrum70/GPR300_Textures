@@ -38,10 +38,14 @@ void Texture::ExposeImGui()
 {
 	glActiveTexture(texNumber);
 
+	//Tiling
+	ImGui::SliderFloat2("Texture Scale", &scaleFactor.x, .01, 10);
+
+	//Scroll Speed
+	ImGui::SliderFloat2("Scroll Speed", &scrollSpeed.x, 0, 10);
+
 	//Vertical Wrapping
 	int lastVertWrap = currentVertWrap;
-
-	ImGui::SliderFloat("Texture Scale", &scaleFactor, .01, 10);
 
 	if (ImGui::BeginCombo("Vertical Wrap Mode", wrapModes[currentVertWrap], ImGuiComboFlags_None))
 	{

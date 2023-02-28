@@ -236,8 +236,13 @@ int main() {
 		litShader.setMat4("_View", camera.getViewMatrix());
 
 		//Textures
-		litShader.setFloat("_TextureDiamondPlate.scaleFactor", diamondTex.scaleFactor);
-		litShader.setFloat("_TexturePavingStones.scaleFactor", paversTex.scaleFactor);
+		diamondTex.offset += diamondTex.scrollSpeed * deltaTime;
+		paversTex.offset += paversTex.scrollSpeed * time;
+
+		litShader.setVec2("_TextureDiamondPlate.scaleFactor", diamondTex.scaleFactor);
+		litShader.setVec2("_TextureDiamondPlate.offset", diamondTex.offset);
+		litShader.setVec2("_TexturePavingStones.scaleFactor", paversTex.scaleFactor);
+		litShader.setVec2("_TexturePavingStones.offset", paversTex.offset);
 
 		//Attenuation Uniforms
 		litShader.setFloat("_Attenuation.constant", constantAttenuation);

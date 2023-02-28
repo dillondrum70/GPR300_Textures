@@ -75,7 +75,8 @@ uniform bool _Phong;
 
 struct Texture
 {
-    float scaleFactor;
+    vec2 scaleFactor;
+    vec2 offset;
     sampler2D texSampler;
 };
 
@@ -221,5 +222,5 @@ void main()
     //Spotlight diffuse and specular
     calculateSpotlight(diffuse, specular);
 
-    FragColor = texture(_TextureDiamondPlate.texSampler, vert_out.UV * _TextureDiamondPlate.scaleFactor) * vec4(ambient + diffuse + specular, 1.0f);
+    FragColor = texture(_TextureDiamondPlate.texSampler, (vert_out.UV + _TextureDiamondPlate.offset) * _TextureDiamondPlate.scaleFactor) * vec4(ambient + diffuse + specular, 1.0f);
 }
