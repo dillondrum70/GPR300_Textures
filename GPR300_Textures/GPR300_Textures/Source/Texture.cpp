@@ -4,6 +4,8 @@
 
 GLuint Texture::CreateTexture(const char* filePath)
 {
+	glActiveTexture(texNumber);
+
 	//Create texture name
 	glGenTextures(1, &texture);
 
@@ -30,4 +32,119 @@ GLuint Texture::CreateTexture(const char* filePath)
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	return texture;
+}
+
+void Texture::ExposeImGui()
+{
+	glActiveTexture(texNumber);
+
+	//Vertical Wrapping
+	int lastVertWrap = currentVertWrap;
+
+	ImGui::SliderFloat("Texture Scale", &scaleFactor, .01, 10);
+
+	if (ImGui::BeginCombo("Vertical Wrap Mode", wrapModes[currentVertWrap], ImGuiComboFlags_None))
+	{
+		for (int i = 0; i < IM_ARRAYSIZE(wrapModes); i++)
+		{
+			bool selected = wrapModes[currentVertWrap] == wrapModes[i];
+
+			if (ImGui::Selectable(wrapModes[i], selected))
+			{
+				currentVertWrap = i;
+			}
+				
+			if (selected)
+			{
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+		ImGui::EndCombo();
+	}
+
+	if (currentVertWrap != lastVertWrap)
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapEnumModes[currentVertWrap]);
+	}
+
+	//Horizontal Wrapping
+	int lastHorizWrap = currentHorizWrap;
+
+	if (ImGui::BeginCombo("Horizontal Wrap Mode", wrapModes[currentHorizWrap], ImGuiComboFlags_None))
+	{
+		for (int i = 0; i < IM_ARRAYSIZE(wrapModes); i++)
+		{
+			bool selected = wrapModes[currentHorizWrap] == wrapModes[i];
+
+			if (ImGui::Selectable(wrapModes[i], selected))
+			{
+				currentHorizWrap = i;
+			}
+
+			if (selected)
+			{
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+		ImGui::EndCombo();
+	}
+
+	if (currentHorizWrap != lastHorizWrap)
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapEnumModes[currentHorizWrap]);
+	}
+
+	//Mag Filter
+	int lastMagFilter = currentMagFilter;
+
+	if (ImGui::BeginCombo("Mag Filter", filterModes[currentMagFilter], ImGuiComboFlags_None))
+	{
+		for (int i = 0; i < IM_ARRAYSIZE(filterModes); i++)
+		{
+			bool selected = filterModes[currentMagFilter] == filterModes[i];
+
+			if (ImGui::Selectable(filterModes[i], selected))
+			{
+				currentMagFilter = i;
+			}
+
+			if (selected)
+			{
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+		ImGui::EndCombo();
+	}
+
+	if (currentMagFilter != lastMagFilter)
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterEnumModes[currentMagFilter]);
+	}
+
+	//MinFilter
+	int lastMinFliter = currentMinFilter;
+
+	if (ImGui::BeginCombo("Min Filter", filterModes[currentMinFilter], ImGuiComboFlags_None))
+	{
+		for (int i = 0; i < IM_ARRAYSIZE(filterModes); i++)
+		{
+			bool selected = filterModes[currentMinFilter] == filterModes[i];
+
+			if (ImGui::Selectable(filterModes[i], selected))
+			{
+				currentMinFilter = i;
+			}
+
+			if (selected)
+			{
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+		ImGui::EndCombo();
+	}
+
+	if (currentMinFilter != lastMinFliter)
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterEnumModes[currentMinFilter]);
+	}
 }

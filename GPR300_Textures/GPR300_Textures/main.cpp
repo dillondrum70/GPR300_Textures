@@ -159,16 +159,14 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
-	Texture diamondTex = Texture();
+	Texture diamondTex = Texture(GL_TEXTURE0);
 	diamondTex.CreateTexture((ASSET_PATH + TEX_FILENAME_DIAMOND_PLATE).c_str());
-
-	glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(diamondTex.texNumber);
 	glBindTexture(GL_TEXTURE_2D, diamondTex.GetTexture());
 
-	Texture paversTex = Texture();
+	Texture paversTex = Texture(GL_TEXTURE1);
 	paversTex.CreateTexture((ASSET_PATH + TEX_FILENAME_PAVING_STONES).c_str());
-
-	glActiveTexture(GL_TEXTURE1);
+	glActiveTexture(paversTex.texNumber);
 	glBindTexture(GL_TEXTURE_2D, paversTex.GetTexture());
 
 	//Initialize shape transforms
@@ -214,10 +212,10 @@ int main() {
 	directionalLights[7].color = glm::vec3(0, 1, 0);
 
 	//Set texture sampler to texture unit 0
-	litShader.setInt("_TextureDiamondPlate", 0);
+	litShader.setInt("_TextureDiamondPlate.texSampler", 0);
 
 	//Set texture sampler to texture unit 1
-	litShader.setInt("_TexturePavingStones", 1);
+	litShader.setInt("_TexturePavingStones.texSampler", 1);
 
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
@@ -236,6 +234,10 @@ int main() {
 		litShader.use();
 		litShader.setMat4("_Projection", camera.getProjectionMatrix());
 		litShader.setMat4("_View", camera.getViewMatrix());
+
+		//Textures
+		litShader.setFloat("_TextureDiamondPlate.scaleFactor", diamondTex.scaleFactor);
+		litShader.setFloat("_TexturePavingStones.scaleFactor", paversTex.scaleFactor);
 
 		//Attenuation Uniforms
 		litShader.setFloat("_Attenuation.constant", constantAttenuation);
@@ -448,6 +450,22 @@ int main() {
 			spotlights[i].ExposeImGui(manuallyMoveLights);
 			ImGui::PopID();
 		}
+
+		ImGui::End();
+
+		//Texture
+		ImGui::SetNextWindowSize(ImVec2(0, 0), ImGuiCond_FirstUseEver);	//Size to fit content
+		ImGui::Begin("Textures");
+
+		ImGui::PushID(0);
+		ImGui::Text("Diamond Plate Texture");
+		diamondTex.ExposeImGui();
+		ImGui::PopID();
+
+		ImGui::PushID(1);
+		ImGui::Text("Paving Stone Texture");
+		paversTex.ExposeImGui();
+		ImGui::PopID();
 
 		ImGui::End();
 

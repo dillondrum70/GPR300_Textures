@@ -73,8 +73,14 @@ uniform Material _Mat;
 uniform vec3 _CamPos;
 uniform bool _Phong;
 
-uniform sampler2D _TextureDiamondPlate;
-uniform sampler2D _TexturePavingStones;
+struct Texture
+{
+    float scaleFactor;
+    sampler2D texSampler;
+};
+
+uniform Texture _TextureDiamondPlate;
+uniform Texture _TexturePavingStones;
 
 //Functions
 
@@ -215,5 +221,5 @@ void main()
     //Spotlight diffuse and specular
     calculateSpotlight(diffuse, specular);
 
-    FragColor = texture(_TextureDiamondPlate, vert_out.UV) * vec4(ambient + diffuse + specular, 1.0f);
+    FragColor = texture(_TextureDiamondPlate.texSampler, vert_out.UV * _TextureDiamondPlate.scaleFactor) * vec4(ambient + diffuse + specular, 1.0f);
 }
