@@ -24,6 +24,7 @@
 
 #include "Material.h"
 #include "Texture.h"
+#include "TextureManager.h"
 
 #include "PointLight.h"
 #include "DirectionalLight.h"
@@ -95,6 +96,8 @@ const std::string ASSET_PATH = "./Textures/";
 const std::string TEX_FILENAME_DIAMOND_PLATE = "DiamondPlate006C_4K_Color.jpg";
 const std::string TEX_FILENAME_PAVING_STONES = "PavingStones130_4K_Color.jpg";
 
+int currentTextureIndex = 0;
+
 int main() {
 	if (!glfwInit()) {
 		printf("glfw failed to init");
@@ -159,15 +162,17 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
-	Texture diamondTex = Texture(GL_TEXTURE0);
-	diamondTex.CreateTexture((ASSET_PATH + TEX_FILENAME_DIAMOND_PLATE).c_str());
-	glActiveTexture(diamondTex.texNumber);
-	glBindTexture(GL_TEXTURE_2D, diamondTex.GetTexture());
+	//Load in textures and add them to array
+	TextureManager texManager;
+	texManager.AddTexture((ASSET_PATH + TEX_FILENAME_DIAMOND_PLATE).c_str());
+	texManager.AddTexture((ASSET_PATH + TEX_FILENAME_PAVING_STONES).c_str());
 
-	Texture paversTex = Texture(GL_TEXTURE1);
-	paversTex.CreateTexture((ASSET_PATH + TEX_FILENAME_PAVING_STONES).c_str());
-	glActiveTexture(paversTex.texNumber);
-	glBindTexture(GL_TEXTURE_2D, paversTex.GetTexture());
+	//Set texture samplers
+	for (size_t i = 0; i < texManager.textureCount; i++)
+	{
+		//Set texture sampler to texture unit number
+		litShader.setInt("_Textures[" + std::to_string(i) + "].texSampler", i);
+	}
 
 	//Initialize shape transforms
 	ew::Transform cubeTransform;
@@ -211,12 +216,6 @@ int main() {
 	directionalLights[6].color = glm::vec3(1, 1, 0);
 	directionalLights[7].color = glm::vec3(0, 1, 0);
 
-	//Set texture sampler to texture unit 0
-	litShader.setInt("_TextureDiamondPlate.texSampler", 0);
-
-	//Set texture sampler to texture unit 1
-	litShader.setInt("_TexturePavingStones.texSampler", 1);
-
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
 		glClearColor(bgColor.r,bgColor.g,bgColor.b, 1.0f);
@@ -236,13 +235,14 @@ int main() {
 		litShader.setMat4("_View", camera.getViewMatrix());
 
 		//Textures
-		diamondTex.offset += diamondTex.scrollSpeed * deltaTime;
-		paversTex.offset += paversTex.scrollSpeed * time;
+		litShader.setInt("_CurrentTexture", currentTextureIndex);
 
-		litShader.setVec2("_TextureDiamondPlate.scaleFactor", diamondTex.scaleFactor);
-		litShader.setVec2("_TextureDiamondPlate.offset", diamondTex.offset);
-		litShader.setVec2("_TexturePavingStones.scaleFactor", paversTex.scaleFactor);
-		litShader.setVec2("_TexturePavingStones.offset", paversTex.offset);
+		for (size_t i = 0; i < texManager.textureCount; i++)
+		{
+			texManager.textures[i].offset += texManager.textures[i].scrollSpeed * deltaTime;
+			litShader.setVec2("_Textures[" + std::to_string(i) + "].scaleFactor", texManager.textures[i].scaleFactor);
+			litShader.setVec2("_Textures[" + std::to_string(i) + "].offset", texManager.textures[i].offset);
+		}
 
 		//Attenuation Uniforms
 		litShader.setFloat("_Attenuation.constant", constantAttenuation);
@@ -462,15 +462,15 @@ int main() {
 		ImGui::SetNextWindowSize(ImVec2(0, 0), ImGuiCond_FirstUseEver);	//Size to fit content
 		ImGui::Begin("Textures");
 
-		ImGui::PushID(0);
-		ImGui::Text("Diamond Plate Texture");
-		diamondTex.ExposeImGui();
-		ImGui::PopID();
+		ImGui::SliderInt("Current Texture Channel", &currentTextureIndex, 0, texManager.textureCount - 1);
 
-		ImGui::PushID(1);
-		ImGui::Text("Paving Stone Texture");
-		paversTex.ExposeImGui();
-		ImGui::PopID();
+		for (size_t i = 0; i < texManager.textureCount; i++)
+		{
+			ImGui::PushID(i);
+			ImGui::Text(("Texture" + std::to_string(i)).c_str());
+			texManager.textures[i].ExposeImGui();
+			ImGui::PopID();
+		}
 
 		ImGui::End();
 

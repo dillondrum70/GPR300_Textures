@@ -80,8 +80,9 @@ struct Texture
     sampler2D texSampler;
 };
 
-uniform Texture _TextureDiamondPlate;
-uniform Texture _TexturePavingStones;
+const int MAX_TEXTURES = 32;
+uniform Texture _Textures[MAX_TEXTURES];
+uniform int _CurrentTexture;
 
 //Functions
 
@@ -222,5 +223,5 @@ void main()
     //Spotlight diffuse and specular
     calculateSpotlight(diffuse, specular);
 
-    FragColor = texture(_TextureDiamondPlate.texSampler, (vert_out.UV + _TextureDiamondPlate.offset) * _TextureDiamondPlate.scaleFactor) * vec4(ambient + diffuse + specular, 1.0f);
+    FragColor = texture(_Textures[_CurrentTexture].texSampler, (vert_out.UV + _Textures[_CurrentTexture].offset) * _Textures[_CurrentTexture].scaleFactor) * vec4(ambient + diffuse + specular, 1.0f);
 }

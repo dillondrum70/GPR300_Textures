@@ -147,6 +147,7 @@
     <ClCompile Include="Source\Material.cpp" />
     <ClCompile Include="Source\SpotLight.cpp" />
     <ClCompile Include="Source\Texture.cpp" />
+    <ClCompile Include="Source\TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EW\Camera.h" />
@@ -169,6 +170,7 @@
     <ClInclude Include="Source\Material.h" />
     <ClInclude Include="Source\SpotLight.h" />
     <ClInclude Include="Source\Texture.h" />
+    <ClInclude Include="Source\TextureManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

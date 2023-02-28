@@ -38,9 +38,6 @@ private:
 	unsigned char* textureData = nullptr;
 
 public:
-	//static Texture textures[32];
-	//static int textureCount;
-
 	GLenum texNumber = GL_TEXTURE0;
 
 	glm::vec2 scaleFactor = glm::vec2(1);
@@ -48,6 +45,8 @@ public:
 	glm::vec2 scrollSpeed = glm::vec2(0);
 
 	glm::vec2 offset = glm::vec2(0);
+
+	Texture() {}
 
 	Texture(GLenum textureNumber) : texNumber(textureNumber) {}
 
