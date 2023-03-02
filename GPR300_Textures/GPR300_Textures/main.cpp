@@ -136,17 +136,17 @@ int main() {
 	//Used to draw light sphere
 	Shader unlitShader("shaders/defaultLit.vert", "shaders/unlit.frag");
 
-	/*ew::MeshData cubeMeshData;
+	ew::MeshData cubeMeshData;
 	ew::createCube(1.0f, 1.0f, 1.0f, cubeMeshData);
 	ew::MeshData sphereMeshData;
-	ew::createSphere(0.5f, 64, sphereMeshData);*/
+	ew::createSphere(0.5f, 64, sphereMeshData);
 	ew::MeshData cylinderMeshData;
 	ew::createCylinder(1.0f, 0.5f, 64, cylinderMeshData);
 	ew::MeshData planeMeshData;
 	ew::createPlane(1.0f, 1.0f, planeMeshData);
 
-	//ew::Mesh cubeMesh(&cubeMeshData);
-	//ew::Mesh sphereMesh(&sphereMeshData);
+	ew::Mesh cubeMesh(&cubeMeshData);
+	ew::Mesh sphereMesh(&sphereMeshData);
 	ew::Mesh planeMesh(&planeMeshData);
 	ew::Mesh cylinderMesh(&cylinderMeshData);
 
@@ -328,17 +328,17 @@ int main() {
 
 		litShader.setInt("_Phong", phong);
 
-		////Draw cube
-		//glm::mat4 cubeModel = cubeTransform.getModelMatrix();
-		//litShader.setMat4("_Model", cubeModel);
-		//litShader.setMat4("_NormalMatrix", glm::transpose(glm::inverse(cubeModel)));
-		//cubeMesh.draw();
+		//Draw cube
+		glm::mat4 cubeModel = cubeTransform.getModelMatrix();
+		litShader.setMat4("_Model", cubeModel);
+		litShader.setMat4("_NormalMatrix", glm::transpose(glm::inverse(cubeModel)));
+		cubeMesh.draw();
 
 		////Draw sphere
-		//glm::mat4 sphereModel = sphereTransform.getModelMatrix();
-		//litShader.setMat4("_Model", sphereModel);
-		//litShader.setMat4("_NormalMatrix", glm::transpose(glm::inverse(sphereModel)));
-		//sphereMesh.draw();
+		glm::mat4 sphereModel = sphereTransform.getModelMatrix();
+		litShader.setMat4("_Model", sphereModel);
+		litShader.setMat4("_NormalMatrix", glm::transpose(glm::inverse(sphereModel)));
+		sphereMesh.draw();
 
 		//Draw cylinder
 		glm::mat4 cylinderModel = cylinderTransform.getModelMatrix();
@@ -360,7 +360,7 @@ int main() {
 		{
 			unlitShader.setMat4("_Model", glm::translate(glm::mat4(1), pointLights[i].pos) * glm::scale(glm::mat4(1), glm::vec3(lightScale)));
 			unlitShader.setVec3("_Color", pointLights[i].color);
-			//sphereMesh.draw();
+			sphereMesh.draw();
 		}
 
 		for (size_t i = 0; i < spotlightCount; i++)
@@ -369,7 +369,7 @@ int main() {
 
 			unlitShader.setMat4("_Model", glm::translate(glm::mat4(1), spotlights[i].pos)* rotation * glm::scale(glm::mat4(1), glm::vec3(lightScale)));
 			unlitShader.setVec3("_Color", spotlights[i].color);
-			//cylinderMesh.draw();
+			cylinderMesh.draw();
 		}
 
 		//Material
