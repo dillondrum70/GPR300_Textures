@@ -223,5 +223,6 @@ void main()
     //Spotlight diffuse and specular
     calculateSpotlight(diffuse, specular);
 
-    FragColor = texture(_Textures[_CurrentTexture].texSampler, (vert_out.UV + _Textures[_CurrentTexture].offset) * _Textures[_CurrentTexture].scaleFactor) * vec4(ambient + diffuse + specular, 1.0f);
+    //FragColor = texture(_Textures[_CurrentTexture].texSampler, (vert_out.UV + _Textures[_CurrentTexture].offset) * _Textures[_CurrentTexture].scaleFactor) * vec4(ambient + diffuse + specular, 1.0f);
+    FragColor = vec4(vert_out.UV.x, vert_out.UV.y, 0, 1);
 }

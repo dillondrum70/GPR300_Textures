@@ -136,7 +136,7 @@ namespace ew {
 		float bottomY = -radius;
 
 		unsigned int topIndex = 0;
-		meshData.vertices.push_back({ glm::vec3(0,topY,0),glm::vec3(0,1,0), glm::vec2(0, 0)});
+		meshData.vertices.push_back({ glm::vec3(0,topY,0),glm::vec3(0,1,0), glm::vec2(.5, 0)});
 
 		//Angle between segments
 		float thetaStep = (2.0f * glm::pi<float>()) / (float)numSegments;
@@ -157,13 +157,15 @@ namespace ew {
 
 				glm::vec3 position = radius * glm::vec3(x, y, z);
 				glm::vec3 normal = glm::normalize(glm::vec3(x, y, z));
-				glm::vec2 uv = glm::vec2(((atanf(z / x) / glm::two_pi<float>()) + .25f) * 2, acosf(y) / glm::pi<float>());
+				glm::vec2 uv = glm::vec2(
+					((atan2(z , x) / glm::two_pi<float>()) + 1) / 2, 
+					acosf(y) / glm::pi<float>());
 				printf("%f, %f\n", uv.x, uv.y);
 				meshData.vertices.push_back({ position, normal, uv });
 			}
 		}
 
-		meshData.vertices.push_back({ glm::vec3(0,bottomY,0), glm::vec3(0,-1,0), glm::vec2(1, 1) });
+		meshData.vertices.push_back({ glm::vec3(0,bottomY,0), glm::vec3(0,-1,0), glm::vec2(.5, 1) });
 		unsigned int bottomIndex = (unsigned int)meshData.vertices.size() - 1;
 		unsigned int ringVertexCount = numSegments + 1;
 
@@ -224,7 +226,9 @@ namespace ew {
 				halfHeight,
 				sin(i * thetaStep) * radius
 			);
-			meshData.vertices.push_back(Vertex(pos, glm::vec3(0, 1, 0), glm::vec2((cos(i * thetaStep) + 1) / 2, (sin(i * thetaStep) + 1) / 2)));
+
+			glm::vec2 uv = glm::vec2((cos(i * thetaStep) + 1) / 2, (sin(i * thetaStep) + 1) / 2);
+			meshData.vertices.push_back(Vertex(pos, glm::vec3(0, 1, 0), uv));
 		}
 
 		//Bottom cap (facing down)
@@ -237,7 +241,8 @@ namespace ew {
 				-halfHeight,
 				sin(i * thetaStep) * radius
 			);
-			meshData.vertices.push_back(Vertex(pos, glm::vec3(0, -1, 0), glm::vec2((cos(i * thetaStep) + 1) / 2, (sin(i * thetaStep) + 1) / 2)));
+			glm::vec2 uv = glm::vec2((cos(i * thetaStep) + 1) / 2, (sin(i * thetaStep) + 1) / 2);
+			meshData.vertices.push_back(Vertex(pos, glm::vec3(0, -1, 0), uv));
 		}
 
 		//Sides (facing out)
