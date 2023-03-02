@@ -139,16 +139,16 @@ int main() {
 	/*ew::MeshData cubeMeshData;
 	ew::createCube(1.0f, 1.0f, 1.0f, cubeMeshData);
 	ew::MeshData sphereMeshData;
-	ew::createSphere(0.5f, 64, sphereMeshData);
+	ew::createSphere(0.5f, 64, sphereMeshData);*/
 	ew::MeshData cylinderMeshData;
-	ew::createCylinder(1.0f, 0.5f, 64, cylinderMeshData);*/
+	ew::createCylinder(1.0f, 0.5f, 64, cylinderMeshData);
 	ew::MeshData planeMeshData;
 	ew::createPlane(1.0f, 1.0f, planeMeshData);
 
 	//ew::Mesh cubeMesh(&cubeMeshData);
 	//ew::Mesh sphereMesh(&sphereMeshData);
 	ew::Mesh planeMesh(&planeMeshData);
-	//ew::Mesh cylinderMesh(&cylinderMeshData);
+	ew::Mesh cylinderMesh(&cylinderMeshData);
 
 	//Enable back face culling
 	glEnable(GL_CULL_FACE);
@@ -340,11 +340,11 @@ int main() {
 		//litShader.setMat4("_NormalMatrix", glm::transpose(glm::inverse(sphereModel)));
 		//sphereMesh.draw();
 
-		////Draw cylinder
-		//glm::mat4 cylinderModel = cylinderTransform.getModelMatrix();
-		//litShader.setMat4("_Model", cylinderModel);
-		//litShader.setMat4("_NormalMatrix", glm::transpose(glm::inverse(cylinderModel)));
-		//cylinderMesh.draw();
+		//Draw cylinder
+		glm::mat4 cylinderModel = cylinderTransform.getModelMatrix();
+		litShader.setMat4("_Model", cylinderModel);
+		litShader.setMat4("_NormalMatrix", glm::transpose(glm::inverse(cylinderModel)));
+		cylinderMesh.draw();
 
 		//Draw plane
 		glm::mat4 planeModel = planeTransform.getModelMatrix();

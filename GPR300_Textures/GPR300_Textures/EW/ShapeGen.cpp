@@ -205,83 +205,85 @@ namespace ew {
 	//	}
 	//}
 
-	//void createCylinder(float height, float radius, int numSegments, MeshData& meshData)
-	//{
-	//	meshData.vertices.clear();
-	//	meshData.indices.clear();
+	void createCylinder(float height, float radius, int numSegments, MeshData& meshData)
+	{
+		meshData.vertices.clear();
+		meshData.indices.clear();
 
-	//	float halfHeight = height * 0.5f;
-	//	float thetaStep = glm::pi<float>() * 2.0f / numSegments;
+		float halfHeight = height * 0.5f;
+		float thetaStep = glm::pi<float>() * 2.0f / numSegments;
 
-	//	//VERTICES
-	//	//Top cap (facing up)
-	//	meshData.vertices.push_back(Vertex(glm::vec3(0, halfHeight, 0), glm::vec3(0, 1, 0)));
-	//	for (int i = 0; i <= numSegments; i++)
-	//	{
-	//		glm::vec3 pos = glm::vec3(
-	//			cos(i * thetaStep) * radius,
-	//			halfHeight,
-	//			sin(i * thetaStep) * radius
-	//		);
-	//		meshData.vertices.push_back(Vertex(pos, glm::vec3(0, 1, 0)));
-	//	}
+		//VERTICES
+		//Top cap (facing up)
+		meshData.vertices.push_back(Vertex(glm::vec3(0, halfHeight, 0), glm::vec3(0, 1, 0), glm::vec2(.5, .5)));
+		for (int i = 0; i <= numSegments; i++)
+		{
+			glm::vec3 pos = glm::vec3(
+				cos(i * thetaStep) * radius,
+				halfHeight,
+				sin(i * thetaStep) * radius
+			);
+			meshData.vertices.push_back(Vertex(pos, glm::vec3(0, 1, 0), glm::vec2(cos(i * thetaStep), sin(i * thetaStep))));
+		}
 
-	//	//Bottom cap (facing down)
-	//	meshData.vertices.push_back(Vertex(glm::vec3(0, -halfHeight, 0), glm::vec3(0, -1, 0)));
-	//	unsigned int bottomCenterIndex = (unsigned int)meshData.vertices.size() - 1;
-	//	for (int i = 0; i <= numSegments; i++)
-	//	{
-	//		glm::vec3 pos = glm::vec3(
-	//			cos(i * thetaStep) * radius,
-	//			-halfHeight,
-	//			sin(i * thetaStep) * radius
-	//		);
-	//		meshData.vertices.push_back(Vertex(pos, glm::vec3(0, -1, 0)));
-	//	}
+		//Bottom cap (facing down)
+		meshData.vertices.push_back(Vertex(glm::vec3(0, -halfHeight, 0), glm::vec3(0, -1, 0), glm::vec2(.5, .5)));
+		unsigned int bottomCenterIndex = (unsigned int)meshData.vertices.size() - 1;
+		for (int i = 0; i <= numSegments; i++)
+		{
+			glm::vec3 pos = glm::vec3(
+				cos(i * thetaStep) * radius,
+				-halfHeight,
+				sin(i * thetaStep) * radius
+			);
+			meshData.vertices.push_back(Vertex(pos, glm::vec3(0, -1, 0), glm::vec2(cos(i * thetaStep), sin(i * thetaStep))));
+		}
 
-	//	//Sides (facing out)
-	//	unsigned int sideStartIndex = (unsigned int)meshData.vertices.size();
-	//	//Side top ring
-	//	for (int i = 0; i <= numSegments; i++)
-	//	{
-	//		glm::vec3 pos = meshData.vertices[i + 1].position;
-	//		glm::vec3 normal = glm::normalize((pos - meshData.vertices[0].position));
-	//		meshData.vertices.push_back(Vertex(pos, normal));
-	//	}
-	//	//Side bottom ring
-	//	for (int i = 0; i <= numSegments; i++)
-	//	{
-	//		glm::vec3 pos = meshData.vertices[bottomCenterIndex + i + 1].position;
-	//		glm::vec3 normal = glm::normalize((pos - meshData.vertices[bottomCenterIndex].position));
-	//		meshData.vertices.push_back(Vertex(pos, normal));
-	//	}
+		//Sides (facing out)
+		unsigned int sideStartIndex = (unsigned int)meshData.vertices.size();
+		//Side top ring
+		for (int i = 0; i <= numSegments; i++)
+		{
+			glm::vec3 pos = meshData.vertices[i + 1].position;
+			glm::vec3 normal = glm::normalize((pos - meshData.vertices[0].position));
+			glm::vec2 uv = glm::vec2(atan(sin(i * thetaStep) / cos(i * thetaStep)) / (2 * glm::pi<float>()), pos.y);
+			meshData.vertices.push_back(Vertex(pos, normal, uv));
+		}
+		//Side bottom ring
+		for (int i = 0; i <= numSegments; i++)
+		{
+			glm::vec3 pos = meshData.vertices[bottomCenterIndex + i + 1].position;
+			glm::vec3 normal = glm::normalize((pos - meshData.vertices[bottomCenterIndex].position));
+			glm::vec2 uv = glm::vec2(atan(sin(i * thetaStep) / cos(i * thetaStep)) / (2 * glm::pi<float>()), pos.y);
+			meshData.vertices.push_back(Vertex(pos, normal, uv));
+		}
 
-	//	//INDICES
-	//	//Top cap
-	//	for (int i = 0; i < numSegments; i++)
-	//	{
-	//		meshData.indices.push_back(i + 1);
-	//		meshData.indices.push_back(0);
-	//		meshData.indices.push_back(i + 2);
-	//	}
-	//	//Bottom cap
-	//	for (int i = 0; i < numSegments; i++)
-	//	{
-	//		meshData.indices.push_back(bottomCenterIndex);
-	//		meshData.indices.push_back(bottomCenterIndex + i + 1);
-	//		meshData.indices.push_back(bottomCenterIndex + i + 2);
-	//	}
-	//	//Side quads
-	//	for (int i = 0; i < numSegments; i++)
-	//	{
-	//		unsigned int start = sideStartIndex + i;
-	//		meshData.indices.push_back(start);
-	//		meshData.indices.push_back(start + 1);
-	//		meshData.indices.push_back(start + numSegments + 1);
-	//		meshData.indices.push_back(start + numSegments + 1);
-	//		meshData.indices.push_back(start + 1);
-	//		meshData.indices.push_back(start + numSegments + 2);
-	//	}
-	//}
+		//INDICES
+		//Top cap
+		for (int i = 0; i < numSegments; i++)
+		{
+			meshData.indices.push_back(i + 1);
+			meshData.indices.push_back(0);
+			meshData.indices.push_back(i + 2);
+		}
+		//Bottom cap
+		for (int i = 0; i < numSegments; i++)
+		{
+			meshData.indices.push_back(bottomCenterIndex);
+			meshData.indices.push_back(bottomCenterIndex + i + 1);
+			meshData.indices.push_back(bottomCenterIndex + i + 2);
+		}
+		//Side quads
+		for (int i = 0; i < numSegments; i++)
+		{
+			unsigned int start = sideStartIndex + i;
+			meshData.indices.push_back(start);
+			meshData.indices.push_back(start + 1);
+			meshData.indices.push_back(start + numSegments + 1);
+			meshData.indices.push_back(start + numSegments + 1);
+			meshData.indices.push_back(start + 1);
+			meshData.indices.push_back(start + numSegments + 2);
+		}
+	}
 
 }
