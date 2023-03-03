@@ -157,8 +157,20 @@ namespace ew {
 
 				glm::vec3 position = radius * glm::vec3(x, y, z);
 				glm::vec3 normal = glm::normalize(glm::vec3(x, y, z));
+				/*glm::vec2 uv = glm::vec2(0);
+
+				if (theta >= glm::two_pi<float>())
+				{
+					uv = glm::vec2(1, acosf(y) / glm::pi<float>());
+				}
+				else
+				{
+					uv = glm::vec2(
+						((atan2(z, x) / glm::two_pi<float>()) + 1) / 2,
+						acosf(y) / glm::pi<float>());
+				}*/
 				glm::vec2 uv = glm::vec2(
-					((atan2(z , x) / glm::two_pi<float>()) + 1) / 2, 
+					((atan2(z, x) / glm::two_pi<float>()) + 1) / 2,
 					acosf(y) / glm::pi<float>());
 				printf("%f, %f\n", uv.x, uv.y);
 				meshData.vertices.push_back({ position, normal, uv });
@@ -252,8 +264,16 @@ namespace ew {
 		{
 			glm::vec3 pos = meshData.vertices[i + 1].position;
 			glm::vec3 normal = glm::normalize((pos - meshData.vertices[0].position));
-			glm::vec2 uv = glm::vec2(((atan2(sin(i * thetaStep + glm::pi<float>()), cos(i * thetaStep + glm::pi<float>())) / (glm::two_pi<float>())) + .5), 1);
-			//printf("%f\n", uv.x);
+			glm::vec2 uv = glm::vec2(0);
+			if (i == numSegments)
+			{
+				uv = glm::vec2(1, 1);
+			}
+			else
+			{
+				uv = glm::vec2(((atan2(sin(i * thetaStep + glm::pi<float>()), cos(i * thetaStep + glm::pi<float>())) / (glm::two_pi<float>())) + .5), 1);
+			}
+			printf("%f\n", uv.x);
 			meshData.vertices.push_back(Vertex(pos, normal, uv));
 		}
 		//Side bottom ring
@@ -261,7 +281,15 @@ namespace ew {
 		{
 			glm::vec3 pos = meshData.vertices[bottomCenterIndex + i + 1].position;
 			glm::vec3 normal = glm::normalize((pos - meshData.vertices[bottomCenterIndex].position));
-			glm::vec2 uv = glm::vec2(((atan2(sin(i * thetaStep + glm::pi<float>()), cos(i * thetaStep + glm::pi<float>())) / (glm::two_pi<float>())) + .5), 0);
+			glm::vec2 uv = glm::vec2(0);
+			if (i == numSegments)
+			{
+				uv = glm::vec2(1, 0);
+			}
+			else
+			{
+				uv = glm::vec2(((atan2(sin(i * thetaStep + glm::pi<float>()), cos(i * thetaStep + glm::pi<float>())) / (glm::two_pi<float>())) + .5), 0);
+			}
 			meshData.vertices.push_back(Vertex(pos, normal, uv));
 		}
 
